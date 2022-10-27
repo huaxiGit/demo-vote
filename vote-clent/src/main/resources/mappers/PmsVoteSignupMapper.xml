@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allen.vote.mapper.PmsVoteSignupMapper">
+
+
+    <update id="enterVote">
+        UPDATE pms_vote_signup
+        SET vote_num = vote_num + ${voteNumber}
+        where user_id =#{user.userId} and vote_id=#{user.voteId}
+    </update>
+
+
+    <select id="selectVotePage" resultType="com.allen.vote.common.entity.vo.PmsVoteVo">
+        SELECT
+            Vuser.nick_name,
+            signup_index,
+            signup_name,
+            vote_num
+        FROM
+            pms_vote_signup AS voteSignup
+            LEFT JOIN v_user AS Vuser ON voteSignup.user_id = Vuser.id
+        WHERE
+            voteSignup.vote_id = #{voteId}
+    </select>
+    <select id="filtrateVoteSums" resultType="com.allen.vote.common.entity.dao.VoteSignupBo">
+        SELECT
+            Vuser.nick_name,
+            voteSignup.signup_index,
+            voteSignup.signup_name,
+            voteSignup.vote_num,
+            voteSignup.create_time,
+                (select vote_status from pms_vote  where  id = #{voteId}) as voteStatus
+        FROM
+            pms_vote_signup AS voteSignup
+                LEFT JOIN v_user AS Vuser ON voteSignup.user_id = Vuser.id
+        WHERE
+            voteSignup.vote_id = #{voteId}
+        ORDER BY
+            voteSignup.vote_num DESC
+            LIMIT ${voteSum}
+    </select>
+
+
+</mapper>

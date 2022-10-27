@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.allen.vote.mapper.PmsVoteDetailMapper">
+
+
+    <select id="selectVotePage" resultType="com.allen.vote.common.entity.dao.VoteSignupBo">
+        SELECT
+            Vuser.nick_name,
+            voteSignup.signup_index,
+            voteSignup.signup_name,
+            voteSignup.vote_num,
+            voteSignup.create_time
+
+        FROM
+            pms_vote_signup    AS voteSignup
+            LEFT JOIN v_user   AS Vuser    ON voteSignup.user_id = Vuser.id
+            LEFT JOIN pms_vote_detail      AS voteDetail    ON voteDetail.vote_id = voteSignup.vote_id
+            AND voteDetail.vote_signup_id = voteSignup.user_id
+        <where>
+            <if test="voteId  != null">
+                voteSignup.vote_id = #{voteId}
+            </if>
+            <if test="userId != null">
+                AND voteSignup.user_id = #{userId}
+            </if>
+            and voteSignup.is_del = 0
+        </where>
+
+    </select>
+
+<!--     (select vote_status from pms_vote  where  id = #{voteSignup.vote_id}) as voteStatus-->
+</mapper>
